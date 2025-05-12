@@ -22,10 +22,14 @@ export class FormComponent {
       name: ['', Validators.required],
       apellido: ['', Validators.required],
       fechaNacimiento: ['', Validators.required],
-      telefono: ['', Validators.required],
+      telefono: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/) ]],
       email: ['', [Validators.required, Validators.email]],
       foto: ['', Validators.required],
-      direccion : ['']
+      calle : [''],
+      numExt : [''],
+      colonia : [''],
+      ciudad : [''],
+      cp : ['', [Validators.required, Validators.pattern(/^\d{5}$/)]],
     });
   }
 
@@ -53,26 +57,53 @@ export class FormComponent {
     return this.formUser.get('foto') as FormControl;
   }
 
-  get direccion(){
-    return this.formUser.get('direccion') as FormControl;
+  get calle(){
+    return this.formUser.get('calle') as FormControl;
   }
 
+  get numExt(){
+    return this.formUser.get('numExt') as FormControl;
+  }
+
+  get colonia(){
+    return this.formUser.get('colonia') as FormControl;
+  }
+
+  get ciiudad(){
+    return this.formUser.get('ciudad') as FormControl;
+  }
+
+  get cp(){
+    return this.formUser.get('cp') as FormControl;
+  }
+
+  onPhotoChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+
+    const file = input.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+
+    if (allowedTypes.includes(file.type)) {
+      this.foto.setValue(file);
+      this.foto.setErrors(null);
+    } else {
+      this.foto.setValue(null);
+      this.foto.setErrors({ invalidExtension: true });
+    }
+    this.foto.markAsTouched();
+  }
 
   onSubmit() {
-    console.log('onSubmit llamado'); // ← Este log verifica que el método se está ejecutando
-  
     if (this.formUser.valid) {
-      console.log('Formulario válido'); // ← Verifica que pasó la validación
-  
       this.dialogo.open(DialogoComponent, {
         data: { message: 'El formulario fue enviado correctamente.' }
       });
-  
       this.formUser.reset();
     } else {
-      console.log('Formulario inválido'); // ← Indica que no pasó la validación
       this.formUser.markAllAsTouched();
     }
+
   }
   
   
